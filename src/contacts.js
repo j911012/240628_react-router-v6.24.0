@@ -4,11 +4,13 @@ import sortBy from "sort-by";
 
 export async function getContacts(query) {
   await fakeNetwork(`getContacts:${query}`);
+  // queryが指定されていない場合は、全てのcontactsを取得
   let contacts = await localforage.getItem("contacts");
   if (!contacts) contacts = [];
   if (query) {
     contacts = matchSorter(contacts, query, { keys: ["first", "last"] });
   }
+  // 返り値は、lastでソートされたcontacts
   return contacts.sort(sortBy("last", "createdAt"));
 }
 
@@ -71,3 +73,8 @@ async function fakeNetwork(key) {
     setTimeout(res, Math.random() * 800);
   });
 }
+
+// デバッグ用: localforageのデータをクリア
+// localforage.clear().then(() => {
+//   console.log("localforage is now empty.");
+// });
